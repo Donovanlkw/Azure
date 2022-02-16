@@ -1,0 +1,33 @@
+############## Parameter pass to extension script ##############  
+
+  
+
+$argument = " -brokerServer $BrokerServer -CollectionName $CollectionName -user $DomainuserName -pwd $Domainpassword -task $task "  
+
+$argument = $argument + " -vmssName $VMSSName "  
+
+$argument = $argument + " -FQDNVIP $FQDNVIP -sqlserver $sqlserver -sqldb $sqldb -sqladmin $sqluserName -sqlpwd $sqlpassword"  
+
+  
+
+     
+
+  
+
+############## Credential ##############  
+
+  
+
+#$adminCredential = Get-AutomationPSCredential -Name 'AdminUser'  
+
+  
+
+#$adminuserName = $adminCredential.UserName  
+
+  
+
+#$adminsecurePassword = $adminCredential.Password  
+
+  
+
+#$adminpassword = $adminCredential.GetNetworkCredential().Password   

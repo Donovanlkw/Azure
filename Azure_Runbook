@@ -1,0 +1,405 @@
+################ Input  ################ 
+
+param ( 
+
+    [Parameter(Mandatory=$false)] 
+
+    [String] $vmName = "vwts19bk-easd00", 
+
+    [Parameter(Mandatory=$false)] 
+
+    [String] $VMSize = "Standard D2s v2" 
+
+) 
+
+  
+
+################ Connect to Azure ################## 
+
+$connectionName = "AzureRunAsConnection" 
+
+try 
+
+{ 
+
+    # Get the connection "AzureRunAsConnection " 
+
+  
+
+    $servicePrincipalConnection = Get-AutomationConnection -Name $connectionName 
+
+  
+
+    "Logging in to Azure..." 
+
+    $connectionResult =  Connect-AzAccount -Tenant $servicePrincipalConnection.TenantID ` 
+
+                             -ApplicationId $servicePrincipalConnection.ApplicationID   ` 
+
+                             -CertificateThumbprint $servicePrincipalConnection.CertificateThumbprint ` 
+
+                             -ServicePrincipal 
+
+    "Logged in." 
+
+  
+
+} 
+
+catch { 
+
+    if (!$servicePrincipalConnection) 
+
+    { 
+
+        $ErrorMessage = "Connection $connectionName not found." 
+
+        throw $ErrorMessage 
+
+    } else{ 
+
+        Write-Error -Message $_.Exception 
+
+        throw $_.Exception 
+
+    } 
+
+} 
+
+  
+
+################ Definition of DEV in Primary site ################## 
+
+$locationPri = "EastAsia" 
+
+$resourceGroupPri   = "rg-vdi-eas-d-wts19-01" 
+
+$AvailabilitySetbkPri      = "avset-vdi-eas-d-wts19-01-bk01" 
+
+$AvailabilitySetshPri      = "avset-vdi-eas-d-wts19-01-sh01" 
+
+$ResourceGroupNet   = "rg-vdi-eas-d-net-01" 
+
+$vNet  = "vnet-vdi-eas-d-wts19-01" 
+
+  
+
+################ Definition of DEV in Secondary site ################## 
+
+$locationSec = "Southeastasia" 
+
+$resourceGroupSec   = "rg-vdi-sea-d-wts19-01" 
+
+$AvailabilitySetbkSec      = "avset-vdi-sea-d-wts19-01-bk01" 
+
+$AvailabilitySetshSec      = "avset-vdi-sea-d-wts19-01-sh01" 
+
+$ResourceGroupNetSec       = "rg-vdi-sea-d-net-01" 
+
+$vNetSec     = "vnet-vdi-sea-d-wts19-01" 
+
+  
+
+#$vNetDR     = "vnet-vdi-sea-d-wts19-01" 
+
+#$vNetSecDR  = "vnet-vdi-sse-d-wts19-01" 
+
+  
+
+############## Credential ############## 
+
+$adminCredential = Get-AutomationPSCredential -Name 'AdminUser' 
+
+$adminuserName = $adminCredential.UserName 
+
+$adminsecurePassword = $adminCredential.Password 
+
+$adminpassword = $adminCredential.GetNetworkCredential().Password 
+
+  
+
+$DomainCredential = Get-AutomationPSCredential -Name 'DomainUser' 
+
+$DomainuserName = $DomainCredential.UserName 
+
+$DomainsecurePassword = $DomainCredential.Password 
+
+$Domainpassword = $DomainCredential.GetNetworkCredential().Password 
+
+  
+
+$sqlCredential = Get-AutomationPSCredential -Name 'sqluser' 
+
+$sqluserName = $sqlCredential.UserName 
+
+$sqlsecurePassword = $sqlCredential.Password 
+
+$sqlpassword = $sqlCredential.GetNetworkCredential().Password 
+
+  
+
+$Encryptedpassword=$domainpassword| ConvertTo-SecureString -Force -AsPlainText 
+
+$Cred=New-Object PSCredential($adminuserName,$adminsecurePassword) 
+
+  
+
+################ defined the datacenter  ################ 
+
+$location = $locationPri  
+
+$resourceGroup= $resourceGroupPri 
+
+$AvailabilitySet= $AvailabilitySetbkPri 
+
+  
+
+  
+
+################ Definition of SQL ################  
+
+$vmNameSQLPri = "sql-vdi-eas-d-wts19-01" 
+
+$vmNameSQLSec = "sql-vdi-sea-d-wts19-01" 
+
+$databaseName       = "WebPC2019DevDB"  
+
+$startIpPri = "172.29.57.0" 
+
+$endIpPri = "172.29.57.31" 
+
+$startIpSec = "172.29.57.32" 
+
+$endIpSec = "172.29.57.63" 
+
+$VNetRuleName = "RDCCB" 
+
+$VNetRuleNameSec = "RDCCBSec" 
+
+$SubnetAddressPrefix = '172.29.57.0/27' 
+
+$ServiceEndpointTypeName_SqlDb = "Microsoft.Sql" 
+
+  
+
+  
+
+################ defined the new VM ################ 
+
+$NICName = $vmName + "-nic1" 
+
+  
+
+  
+
+################ Input for VM extension PS1 file ################## 
+
+################ Input for VM extension PS1 file ################## 
+
+################ Input for VM extension PS1 file ################## 
+
+  
+
+$task = 'new_CB' 
+
+$BrokerServer = $vmName+".corp.clp.com.hk" 
+
+$BrokerServer = "vwts19bk-easd91.corp.clp.com.hk" 
+
+$CollectionName = "WebPC2019Dev" 
+
+$FQDNVIP= "WebPC2019Dev.corp.clp.com.hk" 
+
+$sqlserver='sql-vdi-eas-d-wts19-01.database.windows.net' 
+
+$sqldb="WebPC2019DevDB" 
+
+  
+
+################ Input for Azure Powershell ################## 
+
+$scriptName = "D_vme_$task.ps1" 
+
+$cseName = "CustomScriptExtension" 
+
+$storageAcctName = "phkvdieasdwts190101rstp" 
+
+$storageContainer = "shell-script" 
+
+  
+
+############## Get Storage Account Key ############## 
+
+$storageKey = (Get-AzStorageAccountKey -ResourceGroupName $resourceGroup -AccountName $storageAcctName).Value[0] 
+
+  
+
+  
+
+############## Parameter pass to extension script ############## 
+
+$argument = " -brokerServer $BrokerServer -CollectionName $CollectionName -user $DomainuserName -pwd $Domainpassword -task $task " 
+
+#$argument = $argument + " -vmssName $VMSSName " 
+
+#$argument = $argument + " -FQDNVIP $FQDNVIP -sqlserver $sqlserver -sqldb $sqldb -sqladmin $sqluserName -sqlpwd $sqlpassword" 
+
+  
+
+  
+
+  
+
+<# 
+
+############## Parameter pass to extension script ############## 
+
+$argument = "-vmssName $VMSSName -brokerServer $BrokerServer -CollectionName $CollectionName -user $DomainuserName -pwd $Domainpassword -task $task " 
+
+$argument = $argument + " -FQDNVIP $FQDNVIP -sqlserver $sqlserver -sqldb $sqldb -sqladmin $$sqluserName -sqlpwd $sqlpassword" 
+
+  
+
+############## Execute script before restart ############## 
+
+$Result = Set-AzVMCustomScriptExtension -ResourceGroupName $resourceGroup -VMName $VMName ` 
+
+-Name $cseName -Location $location ` 
+
+-StorageAccountName $storageAcctName -StorageAccountKey $storageKey ` 
+
+-FileName $scriptName -ContainerName $storageContainer -TypeHandlerVersion 1.8 ` 
+
+-Run $scriptName -ForceRerun $scriptName -Argument $argument 
+
+#> 
+
+  
+
+<# 
+
+############### Definition of VMSS template ################ 
+
+$storageaccount = "phkvdieasdwts190101rstp" 
+
+$SAFileShare = "resource-templates" 
+
+$jsontemplate = "vmss-template.json" 
+
+  
+
+############## Generate SAS token URI ############## 
+
+Set-AzCurrentStorageAccount -ResourceGroupName $ResourceGroup -Name $storageaccount 
+
+$templateuri = New-AzStorageBlobSASToken -Container $SAFileShare -Blob $jsontemplate -Permission r -ExpiryTime (Get-Date).AddHours(1.0) -FullUri 
+
+  
+
+$Net = Get-AzVirtualNetwork -Name $vNet 
+
+  
+
+############## Get VMSS name from variable ############## 
+
+$vmssNameB = Get-AzAutomationVariable -AutomationAccountName $AutomationAccountName -Name "VMSS_Name_B" -ResourceGroupName $resourceGroup 
+
+$vmssName = $vmssNameB.value 
+
+  
+
+############## Parameter pass to extension script ############## 
+
+$argument = "-vmssName $VMSSName -brokerServer $BrokerServer -CollectionName $CollectionName -user $DomainuserName -pwd $Domainpassword -task $task " 
+
+$argument = $argument + " -FQDNVIP $FQDNVIP -sqlserver $sqlserver -sqldb $sqldb -sqladmin $$sqluserName -sqlpwd $sqlpassword" 
+
+  
+
+  
+
+  
+
+############## Parameter pass to extension script ############## 
+
+$argument = " -brokerServer $BrokerServer -CollectionName $CollectionName -user $DomainuserName -pwd $Domainpassword -task $task " 
+
+#$argument = $argument + " -vmssName $VMSSName " 
+
+#$argument = $argument + " -FQDNVIP $FQDNVIP -sqlserver $sqlserver -sqldb $sqldb -sqladmin $$sqluserName -sqlpwd $sqlpassword" 
+
+  
+
+  
+
+#> 
+
+  
+
+  
+
+$AutomationVariable = Get-AzAutomationVariable -ResourceGroupName $resourceGroup –AutomationAccountName "autm-vdi-eas-d-wts19-01"  
+
+#  $AutomationVariable 
+
+  
+
+  
+
+get-job 
+
+    Write-Output "Cred" 
+
+    Write-Output "$Cred" 
+
+    Write-Output "DomainCredential" 
+
+    Write-Output "$DomainCredential" 
+
+    Write-Output "DomainuserName" 
+
+    Write-Output "$DomainuserName" 
+
+    Write-Output "domainpassword"     
+
+    Write-Output "$domainpassword" 
+
+    Write-Output "domainSecurepassword" 
+
+    Write-Output "$domainSecurepassword" 
+
+    Write-Output "Encryptedpassword" 
+
+    Write-Output "$Encryptedpassword" 
+
+  
+
+     
+
+<# 
+
+if ($storageAcct) 
+
+{ 
+
+  if ($newStorageShare -And $setStorageShare) 
+
+    { 
+
+        Write-Output "Provisioning storage completed." 
+
+    } 
+
+} else{ 
+
+       Write-Output "Storage account not found." 
+
+} 
+
+#> 
+
+  
+
+  
+
+ 

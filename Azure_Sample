@@ -31,3 +31,23 @@ $argument = $argument + " -FQDNVIP $FQDNVIP -sqlserver $sqlserver -sqldb $sqldb 
   
 
 #$adminpassword = $adminCredential.GetNetworkCredential().Password   
+
+
+$UserPrincipalName = "newuser1@guestxthoutlook.onmicrosoft.com"  
+
+$RoleDefinition = "Backup Reader"  
+
+$ResourceGroupName = "RG01"    
+
+  
+
+ 
+
+Get-AzRoleDefinition -name $RoleDefinition   
+
+Get-AzRoleAssignment –SignInName $UserPrincipalName   
+
+New-AzRoleAssignment -ResourceGroupName $ResourceGroupName -SignInName $UserPrincipalName -RoleDefinitionName $RoleDefinition   
+
+  
+  

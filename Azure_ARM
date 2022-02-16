@@ -1,0 +1,41 @@
+$ManagementGroupName = "MG001" 
+
+$ResourceGroup = "RG001" 
+
+$Location = "Southeast Asia" 
+
+ 
+
+Get-AzManagementGroup 
+
+ 
+
+#----- Create a Management Group 
+
+ 
+
+New-AzManagementGroup -GroupName $ManagementGroupName -DisplayName $ManagementGroupName  
+
+ 
+
+ 
+
+ 
+
+Get-AzResourceGroup  
+
+New-AzResourceGroup -Name $ResourceGroup -Location $Location 
+
+ 
+
+ 
+
+New-AzVm ` -ResourceGroupName "myResourceGroup" ` -Name "myVM" ` -Location "East US" ` -VirtualNetworkName "myVnet" ` -SubnetName "mySubnet" ` -SecurityGroupName "myNetworkSecurityGroup" ` -PublicIpAddressName "myPublicIpAddress" ` -OpenPorts 80,3389 
+
+ 
+
+ Policies. 
+
+- individual,  
+
+Definition, Assessment , parameter 

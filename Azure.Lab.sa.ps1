@@ -24,6 +24,18 @@ $subnetConfig = Add-AzVirtualNetworkSubnetConfig @subnet
 
 
 
+$Location = 'EastAsia'
+$ResourceGroupName = 'MyResourceGroup'
+$vnet = 'MyVNet'
+$vmName = 'vm-lab-win001'
+
+################ Create a VM Configuration ################ 
+$vmConfig = New-AzVMConfig -VMName $vmName -VMSize $VMSize -AvailabilitySetID $Aset.Id | `
+Set-AzVMOperatingSystem -Windows -ComputerName $vmName -Credential $Cred | `
+Set-AzVMSourceImage -PublisherName MicrosoftWindowsServer -Offer WindowsServer -Skus 2019-Datacenter -Version latest | `
+Add-AzVMNetworkInterface -Id $nic.Id
+
+
 
 
 New-AzResourceGroup -Name $ResourceGroupName -Location $Location

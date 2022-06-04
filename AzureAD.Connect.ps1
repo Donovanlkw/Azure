@@ -8,13 +8,6 @@ $Encryptedpassword=$Password | ConvertTo-SecureString -Force -AsPlainText
 $credential=New-Object PSCredential($User, $Encryptedpassword)  
 
 
-# ----- Install the Powershell for Azure ----- #
-Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
-Install-Module -Name Az -Scope CurrentUser -Repository PSGallery -Force
-Import-Module az.accounts
-Install-Module AzureAD
-Import-Module AzureAD
-
 # ----- Connect to azure AD ----- #  
 Connect-AzAccount  
 $tenantId = (Get-AzContext).Tenant.Id  

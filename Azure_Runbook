@@ -1,61 +1,32 @@
 ################ Input  ################ 
 
 param ( 
-
     [Parameter(Mandatory=$false)] 
-
     [String] $vmName = "vwts19bk-easd00", 
-
     [Parameter(Mandatory=$false)] 
-
     [String] $VMSize = "Standard D2s v2" 
-
 ) 
 
-  
-
 ################ Connect to Azure ################## 
-
 $connectionName = "AzureRunAsConnection" 
-
 try 
-
 { 
-
     # Get the connection "AzureRunAsConnection " 
-
-  
-
-    $servicePrincipalConnection = Get-AutomationConnection -Name $connectionName 
-
-  
-
+    $servicePrincipalConnection = Get-AutomationConnection -Name $connectionName   
     "Logging in to Azure..." 
-
     $connectionResult =  Connect-AzAccount -Tenant $servicePrincipalConnection.TenantID ` 
 
                              -ApplicationId $servicePrincipalConnection.ApplicationID   ` 
-
                              -CertificateThumbprint $servicePrincipalConnection.CertificateThumbprint ` 
-
                              -ServicePrincipal 
-
-    "Logged in." 
-
-  
-
+    "Logged in."   
 } 
 
 catch { 
-
     if (!$servicePrincipalConnection) 
-
     { 
-
         $ErrorMessage = "Connection $connectionName not found." 
-
         throw $ErrorMessage 
-
     } else{ 
 
         Write-Error -Message $_.Exception 
@@ -71,37 +42,21 @@ catch {
 ################ Definition of DEV in Primary site ################## 
 
 $locationPri = "EastAsia" 
-
 $resourceGroupPri   = "rg-vdi-eas-d-wts19-01" 
-
 $AvailabilitySetbkPri      = "avset-vdi-eas-d-wts19-01-bk01" 
-
 $AvailabilitySetshPri      = "avset-vdi-eas-d-wts19-01-sh01" 
-
 $ResourceGroupNet   = "rg-vdi-eas-d-net-01" 
-
 $vNet  = "vnet-vdi-eas-d-wts19-01" 
-
-  
+ 
 
 ################ Definition of DEV in Secondary site ################## 
-
 $locationSec = "Southeastasia" 
-
 $resourceGroupSec   = "rg-vdi-sea-d-wts19-01" 
-
 $AvailabilitySetbkSec      = "avset-vdi-sea-d-wts19-01-bk01" 
-
 $AvailabilitySetshSec      = "avset-vdi-sea-d-wts19-01-sh01" 
-
 $ResourceGroupNetSec       = "rg-vdi-sea-d-net-01" 
-
-$vNetSec     = "vnet-vdi-sea-d-wts19-01" 
-
-  
-
+$vNetSec     = "vnet-vdi-sea-d-wts19-01"   
 #$vNetDR     = "vnet-vdi-sea-d-wts19-01" 
-
 #$vNetSecDR  = "vnet-vdi-sse-d-wts19-01" 
 
   
@@ -109,34 +64,19 @@ $vNetSec     = "vnet-vdi-sea-d-wts19-01"
 ############## Credential ############## 
 
 $adminCredential = Get-AutomationPSCredential -Name 'AdminUser' 
-
 $adminuserName = $adminCredential.UserName 
-
 $adminsecurePassword = $adminCredential.Password 
-
 $adminpassword = $adminCredential.GetNetworkCredential().Password 
-
-  
-
 $DomainCredential = Get-AutomationPSCredential -Name 'DomainUser' 
-
 $DomainuserName = $DomainCredential.UserName 
-
 $DomainsecurePassword = $DomainCredential.Password 
-
 $Domainpassword = $DomainCredential.GetNetworkCredential().Password 
-
   
-
 $sqlCredential = Get-AutomationPSCredential -Name 'sqluser' 
-
 $sqluserName = $sqlCredential.UserName 
-
 $sqlsecurePassword = $sqlCredential.Password 
-
 $sqlpassword = $sqlCredential.GetNetworkCredential().Password 
-
-  
+ 
 
 $Encryptedpassword=$domainpassword| ConvertTo-SecureString -Force -AsPlainText 
 
@@ -147,11 +87,8 @@ $Cred=New-Object PSCredential($adminuserName,$adminsecurePassword)
 ################ defined the datacenter  ################ 
 
 $location = $locationPri  
-
 $resourceGroup= $resourceGroupPri 
-
 $AvailabilitySet= $AvailabilitySetbkPri 
-
   
 
   

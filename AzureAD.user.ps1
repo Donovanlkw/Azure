@@ -18,6 +18,14 @@ New-ADUser -Name "$_" -GivenName "$_" -Surname "" -SamAccountName "$_" -UserPrin
 #New-AzureADUser -DisplayName "New User" -PasswordProfile $PasswordProfile  -UserPrincipalName "newuser2@guestxthoutlook.onmicrosoft.com" -AccountEnabled $true -MailNickName "newuser2"
 
 
+#---- Create a Azure Name  Group -----#  
+New-AzureADGroup –DisplayName "NormalGroup" -mailEnabled $false –securityEnabled $true –MailNickname "NormalGroup"  
+
+
+#---- Create a Azure Dynamic Group -----#  
+New-AzRoleDefinition| FT Name, Iscustomion -Description "Dynamic group created from PS" -MailEnabled $False -MailNickName "group" -SecurityEnabled $True -GroupTypes "DynamicMembership" -MembershipRule "(user.department -contains ""Marketing"")" -MembershipRuleProcessingState "On"  
+
+
 #---- Create a Azure Dynamic Group -----#
 New-AzureADMSGroup -DisplayName "Dynamic Group 01" -Description "Dynamic group created from PS" -MailEnabled $False -MailNickName "group" -SecurityEnabled $True -GroupTypes "DynamicMembership" -MembershipRule "(user.department -contains ""Marketing"")" -MembershipRuleProcessingState "On"
 
@@ -28,5 +36,3 @@ $O365Users | foreach {$newUpn = $_.UserPrincipalName.Replace("@$Domainname","@$o
 
 
 #---- Assing O365 license @ AAD -----#
-
-

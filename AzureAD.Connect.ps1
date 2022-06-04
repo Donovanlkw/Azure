@@ -1,6 +1,6 @@
 #----- Declare variables -----#  
-$orgName="emceuc1"  
-$Userid = "Donovan"  
+$orgName="Domain"  
+$Userid = "xxxx"  
 $User= "$Userid@$orgName.onMicrosoft.com"  
 $SharepointadminURL="https://$orgName-admin.sharepoint.com"  
 $Password =  "Passw0rd1"  
@@ -11,7 +11,9 @@ $credential=New-Object PSCredential($User, $Encryptedpassword)
 # ----- Install the Powershell for Azure ----- #
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 Install-Module -Name Az -Scope CurrentUser -Repository PSGallery -Force
-
+Import-Module az.accounts
+Install-Module AzureAD
+Import-Module AzureAD
 
 # ----- Connect to azure AD ----- #  
 Connect-AzAccount  

@@ -33,55 +33,28 @@ $LocalPort = "3389"
 New-NetFirewallRule -Name $Firewallrule -DisplayName "$Firewallrule" -Profile    Domain -Direction  Inbound  -Action     Allow -Protocol   TCP -LocalPort  $LocalPort  -RemoteAddress LocalSubnet 
 
 #----- Security configuration ------# 
-
 # Disable-ieESC 
-
     $AdminKey = "HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\{A509B1A7-37EF-4b3f-8CFC-4F3A74704073}" 
-
     $UserKey = "HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\{A509B1A8-37EF-4b3f-8CFC-4F3A74704073}" 
-
     Set-ItemProperty -Path $AdminKey -Name "IsInstalled" -Value 0 
-
     Set-ItemProperty -Path $UserKey -Name "IsInstalled" -Value 0 
-
     Stop-Process -Name Explorer 
-
     Write-Host "IE Enhanced Security Configuration (ESC) has been disabled." -ForegroundColor Green 
 
-  
 
 # Disable-UserAccessControl 
-
     Set-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "ConsentPromptBehaviorAdmin" -Value 00000000 
-
     Write-Host "User Access Control (UAC) has been disabled." -ForegroundColor Green     
 
-  
-
-  
 
 #----- Windows Services configure ------# 
+set-Service -Name Spooler -StartupType Automatic 
 
-  $AdminKey = "HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\{A509B1A7-37EF-4b3f-8CFC-4F3A74704073}" 
 
-  $UserKey = "HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\{A509B1A8-37EF-4b3f-8CFC-4F3A74704073}" 
-
-    Set-ItemProperty -Path $AdminKey -Name "IsInstalled" -Value 0 
-
-    Set-ItemProperty -Path $UserKey -Name "IsInstalled" -Value 0 
-
- 
-
-  
-
-#----- Windows Services configure ------# 
-
-#set-Service -Name Spooler -StartupType Automatic 
-
- 
-
+#----- remove Windows defender ------# 
+Uninstall-WindowsFeature -Name Windows-Defender
  
 
 #----- Renanme Computer name  ------# 
-
 Rename-Computer -NewName $Newname -force -Restart 
+

@@ -62,3 +62,19 @@ New-GPO Wind10_Customization
 New-ADUser -Name $DomainAdmin -GivenName $DomainAdmin  -Surname "" -SamAccountName $DomainAdmin -Path "CN=Users,$DomainDN" -AccountPassword($Encryptedpassword) -Enabled $true 
 Add-ADGroupMember -Identity "Domain Admins" -Members $DomainAdmin  
 Add-ADGroupMember -Identity "schema Admins" -Members $DomainAdmin
+
+
+#---- Add User data set Marvel -----# 
+New-ADUser -Name "Iron Man" -GivenName "Iron" -Surname "Man" -SamAccountName "Iron Man"
+New-ADUser -Name "Thor" -GivenName "Thor" 
+New-ADUser -Name "Hulk" -GivenName "Hulk" 
+New-ADUser -Name "Captain America" -GivenName "Captain America"
+
+
+#---- Add User data set DC -----# 
+New-ADUser -Name "SuperMmn" 
+New-ADUser -Name "Batman"  
+New-ADUser -Name "Wonder Woman"
+New-ADUser -Name "The Flash"
+
+

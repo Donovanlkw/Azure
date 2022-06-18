@@ -36,7 +36,7 @@ Install-ADDSForest -CreateDnsDelegation:$false -DatabasePath $DatabasePath -Doma
 
 
 #----- $setup other Service -----# 
-Install-windowsfeature AD-Certificate -IncludeAllSubFeature 
+#Install-windowsfeature AD-Certificate -IncludeAllSubFeature 
 Install-windowsfeature ADFS-Federation -IncludeAllSubFeature 
 Install-windowsfeature DHCP -IncludeAllSubFeature 
 Install-WindowsFeature print-services -IncludeAllSubFeature 

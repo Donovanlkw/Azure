@@ -7,3 +7,6 @@ Install-AdcsCertificationAuthority -CAType EnterpriseRootCa -CryptoProviderName 
 #https://social.technet.microsoft.com/wiki/contents/articles/15037.ad-cs-step-by-step-guide-two-tier-pki-hierarchy-deployment.aspx
 
 #https://blog.wiztechtalk.com/2019/04/03/microsoft-powershell-install-and-configure-ad-certificate-services-windows-server-2016/
+
+
+#https://docs.microsoft.com/en-us/archive/blogs/russellt/custom-ldap-certs
